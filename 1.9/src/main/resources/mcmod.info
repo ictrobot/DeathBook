@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "deathbook",
+    "name": "DeathBook",
+    "description": "",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["ictrobot"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

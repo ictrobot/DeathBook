@@ -1,0 +1,37 @@
+version = "0.0.1"
+group= "ethanjones.mc.deathbook"
+
+def String getMavenVersionString() {
+	def str = version + "-" + project.minecraft.version;
+	if (!isRelease) {
+		str = str + "-SNAPSHOT"
+	}
+	return str
+}
+
+def String getMavenRepo() {
+	def str = localProperties.MAVEN_REPO_PATH
+	if (isRelease) {
+		str = str + "releases"
+	} else {
+		str = str + "snapshots"
+	}
+	return str
+}
+
+ext {
+	isRelease = false
+    localProperties = new Properties()
+    if (file("../build.properties").exists()) {
+        file("../build.properties").withReader { reader ->
+            localProperties.load(reader)
+        }
+    }
+	if (localProperties.MAVEN_REPO_PATH == null) localProperties.MAVEN_REPO_PATH = getRootProject().getProjectDir().absolutePath + "/repo/"
+    if (localProperties.MAVEN_REPO_USERNAME == null) localProperties.MAVEN_REPO_USERNAME = ""
+    if (localProperties.MAVEN_REPO_PASSWORD == null) localProperties.MAVEN_REPO_PASSWORD = ""
+	
+	//export methods
+	getMavenVersionString = this.&getMavenVersionString
+    getMavenRepo = this.&getMavenRepo
+}
