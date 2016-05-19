@@ -17,7 +17,7 @@ buildscript {
 apply plugin: 'forge'
 apply plugin: 'maven-publish'
 apply from: file('../common.gradle')
-archivesBaseName = "deathbook"
+archivesBaseName = "inventorybook"
 
 minecraft {
     version = "1.7.10-10.13.4.1558-1.7.10"
@@ -45,9 +45,9 @@ processResources {
 publishing {
     publications {
         jar(MavenPublication) {
-            artifact file("/build/libs/deathbook-${version}.jar")
+            artifact file("/build/libs/inventorybook-${version}.jar")
             groupId 'ethanjones.mc'
-            artifactId 'deathbook'
+            artifactId 'inventorybook'
             version getMavenVersionString()
         }
     }

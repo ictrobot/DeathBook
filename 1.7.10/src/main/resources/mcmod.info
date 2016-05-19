@@ -1,7 +1,7 @@
 [
   {
-    "modid": "deathbook",
-    "name": "DeathBook",
+    "modid": "inventorybook",
+    "name": "InventoryBook",
     "description": "",
     "version": "${version}",
     "mcversion": "${mcversion}",

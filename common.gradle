@@ -1,5 +1,5 @@
 version = "0.0.1"
-group= "ethanjones.mc.deathbook"
+group= "ethanjones.mc.inventorybook"
 
 def String getMavenVersionString() {
 	def str = version + "-" + project.minecraft.version;
