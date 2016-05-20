@@ -1,5 +1,6 @@
 package ethanjones.mc.inventorybook;
 
+import ethanjones.mc.inventorybook.handler.IInventoryTEHandler;
 import ethanjones.mc.inventorybook.handler.ModInventoryHandlers;
 import ethanjones.mc.inventorybook.handler.PageHandler;
 import ethanjones.mc.inventorybook.handler.PageHandler.ItemStackCallback;
@@ -8,13 +9,17 @@ import ethanjones.mc.inventorybook.handler.PlayerInventoryHandlers;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -28,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@Mod(modid = "inventorybook", version = "0.0.1")
+@Mod(modid = "inventorybook", version = "0.0.2")
 public class InventoryBook {
   public static final HashMap<UUID, ItemStack> books = new HashMap<UUID, ItemStack>();
   public static final ArrayList<PageHandler<EntityPlayer>> handlers = new ArrayList<PageHandler<EntityPlayer>>() {{
@@ -37,6 +42,7 @@ public class InventoryBook {
     add(new PlayerInventoryHandlers.ArmourHandler());
   }};
   public static final ArrayList<PageHandler<ItemStack>> itemStackHandlers = new ArrayList<PageHandler<ItemStack>>();
+  public static final IInventoryTEHandler iInventoryHandler = new IInventoryTEHandler();
   public static Logger log;
 
   @EventHandler
@@ -57,6 +63,29 @@ public class InventoryBook {
       itemStackHandlers.add(new ModInventoryHandlers.BagginsesHandler());
     }
   }
+
+
+  @SubscribeEvent
+  public void rightClick(PlayerInteractEvent event) {
+    ItemStack itemStack = event.entityPlayer.getHeldItem();
+    if (itemStack == null  ||  itemStack.getItem() != Items.writable_book || !event.entityPlayer.isSneaking()) return;
+    if (event.isCanceled() || event.entityPlayer.worldObj.isRemote || event.entityPlayer instanceof FakePlayer) return;
+
+    if (event.action == Action.RIGHT_CLICK_AIR) {
+      if (!ConfigHandler.RIGHT_CLICK_PLAYER_INVENTORY) return;
+      ItemStack book = getBook(event.entityPlayer, "Inventory");
+      if (book == null || !decrementBook(event.entityPlayer)) return;
+      event.entityPlayer.inventory.addItemStackToInventory(book);
+      event.setCanceled(true);
+    } else if (event.action == Action.RIGHT_CLICK_BLOCK) {
+      TileEntity tileEntity = event.entityPlayer.worldObj.getTileEntity(event.pos);
+      if (tileEntity == null || !(tileEntity instanceof IInventory)) return;
+      ItemStack book = getBook(((IInventory) tileEntity), event.entityPlayer, "Block");
+      if (book == null || !decrementBook(event.entityPlayer)) return;
+      event.entityPlayer.inventory.addItemStackToInventory(book);
+      event.setCanceled(true);
+    }
+  }
   
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   public void death(LivingDeathEvent event) {
@@ -64,10 +93,17 @@ public class InventoryBook {
     World world = entity.worldObj;
     if (event.isCanceled() || world.isRemote || !(entity instanceof EntityPlayer) || entity instanceof FakePlayer)
       return;
+    if (!ConfigHandler.DEATH_BOOK) return;
     EntityPlayer entityPlayer = ((EntityPlayer) entity);
+    if (ConfigHandler.DEATH_REQUIRE_BOOK_AND_QUILL && !decrementBook(entityPlayer)) return;
     ItemStack book = getBook(entityPlayer, "Death");
     books.put(entityPlayer.getPersistentID(), book);
   }
+
+  public boolean decrementBook(EntityPlayer entityPlayer) {
+    return entityPlayer.inventory.clearMatchingItems(Items.writable_book, 0, 1, null) == 1;
+  }
+
   
   @SubscribeEvent
   public void respawn(PlayerRespawnEvent event) {
@@ -112,6 +148,51 @@ public class InventoryBook {
       NBTTagCompound compound = new NBTTagCompound();
       compound.setTag("pages", pages);
       compound.setString("author", player.getName());
+      compound.setString("title", title + " " + date);
+      compound.setBoolean("inventorybook", true);
+
+      ItemStack itemStack = new ItemStack(Items.written_book, 1, 0);
+      itemStack.setTagCompound(compound);
+      return itemStack;
+    } catch (Throwable t) {
+      log.error("FAILED TO CREATE INVENTORY BOOK", t);
+      return null;
+    }
+  }
+
+  public ItemStack getBook(IInventory inv, EntityPlayer entityPlayer, String title) {
+    try {
+      NBTTagList pages = new NBTTagList();
+      final ArrayList<ItemStack> extraPages = new ArrayList<ItemStack>();
+      final ArrayDeque<ItemStack> toProcess = new ArrayDeque<ItemStack>();
+      ItemStackCallback callback = new ItemStackCallback() {
+        @Override
+        public void itemStack(ItemStack itemStack) {
+          toProcess.add(itemStack);
+        }
+
+        @Override
+        public int extraPage(ItemStack itemStack) {
+          extraPages.add(itemStack);
+          return extraPages.size();
+        }
+      };
+      if (iInventoryHandler.valid(inv)) iInventoryHandler.addPages(pages, inv, callback);
+      while (!toProcess.isEmpty()) {
+        ItemStack itemStack = toProcess.pop();
+        for (PageHandler<ItemStack> handler : itemStackHandlers) {
+          if (handler.valid(itemStack)) handler.addPages(pages, itemStack, callback);
+        }
+      }
+      for (int i = 0; i < extraPages.size(); i++) {
+        PageHandler.createExtra(pages, extraPages.get(i), i + 1);
+      }
+      if (pages.hasNoTags()) return null;
+
+      String date = new SimpleDateFormat("HH:mm:ss dd-MM-yyyy").format(new Date());
+      NBTTagCompound compound = new NBTTagCompound();
+      compound.setTag("pages", pages);
+      compound.setString("author", entityPlayer.getName());
       compound.setString("title", title + " " + date);
       compound.setBoolean("inventorybook", true);
 
