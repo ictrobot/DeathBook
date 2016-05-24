@@ -78,6 +78,7 @@ public class InventoryBook {
       event.entityPlayer.inventory.addItemStackToInventory(book);
       event.setCanceled(true);
     } else if (event.action == Action.RIGHT_CLICK_BLOCK) {
+      if (!ConfigHandler.RIGHT_CLICK_BLOCK_INVENTORY) return;
       TileEntity tileEntity = event.entityPlayer.worldObj.getTileEntity(event.pos);
       if (tileEntity == null || !(tileEntity instanceof IInventory)) return;
       ItemStack book = getBook(((IInventory) tileEntity), event.entityPlayer, "Block");
