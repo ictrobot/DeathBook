@@ -22,7 +22,7 @@ public abstract class PageHandler<T> {
   public abstract String title(T obj); // change
 
   public boolean displaySlotNumber() {
-    return true;
+    return ConfigHandler.DISPLAY_SLOT_NUMBERS;
   }
 
   public boolean displayStackSize() {

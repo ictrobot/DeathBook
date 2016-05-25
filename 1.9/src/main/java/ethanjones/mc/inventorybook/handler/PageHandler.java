@@ -28,7 +28,7 @@ public abstract class PageHandler<T> {
   public abstract ITextComponent title(T obj);
 
   public boolean displaySlotNumber() {
-    return true;
+    return ConfigHandler.DISPLAY_SLOT_NUMBERS;
   }
 
   public boolean displayStackSize() {
