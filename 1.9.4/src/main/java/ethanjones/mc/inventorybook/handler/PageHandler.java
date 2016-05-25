@@ -1,6 +1,5 @@
 package ethanjones.mc.inventorybook.handler;
 
-import ethanjones.mc.inventorybook.ConfigHandler;
 import ethanjones.mc.inventorybook.InventoryBook;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +12,8 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.event.HoverEvent;
+
+import static ethanjones.mc.inventorybook.ConfigHandler.*;
 
 public abstract class PageHandler<T> {
   public abstract boolean valid(T obj);
@@ -28,7 +29,7 @@ public abstract class PageHandler<T> {
   public abstract ITextComponent title(T obj);
 
   public boolean displaySlotNumber() {
-    return ConfigHandler.DISPLAY_SLOT_NUMBERS;
+    return DISPLAY_SLOT_NUMBERS;
   }
 
   public boolean displayStackSize() {
@@ -43,7 +44,7 @@ public abstract class PageHandler<T> {
       ItemStack itemStack = itemStack(obj, i);
       if (itemStack == null) continue;
       callback.itemStack(itemStack);
-      if (lines >= ConfigHandler.LINES_PER_PAGE) {
+      if (lines >= LINES_PER_PAGE) {
         pages.appendTag(new NBTTagString(ITextComponent.Serializer.componentToJson(text)));
         text = new TextComponentString("");
         lines = 0;
@@ -51,15 +52,15 @@ public abstract class PageHandler<T> {
 
       StringBuilder stringBuilder = new StringBuilder();
       if (lines != 0) stringBuilder.append("\n");
-      if (displaySlotNumber()) stringBuilder.append(ConfigHandler.TEXT_BEFORE_SLOT_NUMBER).append(convertItemStackIndex(i)).append(ConfigHandler.TEXT_AFTER_SLOT_NUMBER);
-      if (displayStackSize() && itemStack.stackSize > 1) stringBuilder.append(itemStack.stackSize).append(ConfigHandler.TEXT_AFTER_STACK_SIZE);
+      if (displaySlotNumber()) stringBuilder.append(TEXT_BEFORE_SLOT_NUMBER).append(convertItemStackIndex(i)).append(TEXT_AFTER_SLOT_NUMBER);
+      if (displayStackSize() && itemStack.stackSize > 1) stringBuilder.append(itemStack.stackSize).append(TEXT_AFTER_STACK_SIZE);
       text.appendText(stringBuilder.toString());
       text.appendSibling(getItemStackComponent(itemStack, callback, false, true));
 
       String[] split = text.getUnformattedText().split("\n");
       if (split.length == 0) split = new String[]{text.getUnformattedText()};
       int charLen = split[split.length - 1].length();
-      lines += 1 + (charLen / ConfigHandler.CHAR_PER_LINE);
+      lines += 1 + (charLen / CHAR_PER_LINE);
     }
 
     pages.appendTag(new NBTTagString(ITextComponent.Serializer.componentToJson(text)));
@@ -95,7 +96,7 @@ public abstract class PageHandler<T> {
         s = "";
         tagLength = Integer.MAX_VALUE;
       }
-      if (isExtraPage ? tagLength > 32000 : tagLength > ConfigHandler.NBT_PER_ITEM) {
+      if (isExtraPage ? tagLength > 32000 : tagLength > NBT_PER_ITEM) {
         nbttagcompound.removeTag("tag");
         nbttagcompound.removeTag("ForgeCaps");
 
@@ -105,7 +106,7 @@ public abstract class PageHandler<T> {
         tag.setTag("display", display);
 
         String lore;
-        if (!ConfigHandler.NBT_EXTRA_PAGE || !createExtraPage || callback == null || tagLength > 32000) {
+        if (!NBT_EXTRA_PAGE || !createExtraPage || callback == null || tagLength > 32000) {
           lore = "[InventoryBook] NBT Removed - too long";
         } else {
           int i = callback.extraPage(itemStack);

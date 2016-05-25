@@ -34,6 +34,8 @@ import org.apache.logging.log4j.Logger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static ethanjones.mc.inventorybook.ConfigHandler.*;
+
 @Mod(modid = "inventorybook", version = "0.0.2")
 public class InventoryBook {
   public static final HashMap<UUID, ItemStack> books = new HashMap<UUID, ItemStack>();
@@ -78,13 +80,13 @@ public class InventoryBook {
     if (event.isCanceled() || event.entityPlayer.worldObj.isRemote || event.entityPlayer instanceof FakePlayer) return;
 
     if (event.action == Action.RIGHT_CLICK_AIR) {
-      if (!ConfigHandler.RIGHT_CLICK_PLAYER_INVENTORY) return;
+      if (!RIGHT_CLICK_PLAYER_INVENTORY) return;
       ItemStack book = getBook(event.entityPlayer, "Inventory");
       if (book == null || !decrementBook(event.entityPlayer)) return;
       event.entityPlayer.inventory.addItemStackToInventory(book);
       event.setCanceled(true);
     } else if (event.action == Action.RIGHT_CLICK_BLOCK) {
-      if (!ConfigHandler.RIGHT_CLICK_BLOCK_INVENTORY) return;
+      if (!RIGHT_CLICK_BLOCK_INVENTORY) return;
       TileEntity tileEntity = event.entityPlayer.worldObj.getTileEntity(event.x, event.y, event.z);
       if (tileEntity == null || !(tileEntity instanceof IInventory)) return;
       ItemStack book = getBook(((IInventory) tileEntity), event.entityPlayer, "Block");
@@ -100,9 +102,9 @@ public class InventoryBook {
     World world = entity.worldObj;
     if (event.isCanceled() || world.isRemote || !(entity instanceof EntityPlayer) || entity instanceof FakePlayer)
       return;
-    if (!ConfigHandler.DEATH_BOOK) return;
+    if (!DEATH_BOOK) return;
     EntityPlayer entityPlayer = ((EntityPlayer) entity);
-    if (ConfigHandler.DEATH_REQUIRE_BOOK_AND_QUILL && !decrementBook(entityPlayer)) return;
+    if (DEATH_REQUIRE_BOOK_AND_QUILL && !decrementBook(entityPlayer)) return;
     ItemStack book = getBook(entityPlayer, "Death");
     books.put(entityPlayer.getPersistentID(), book);
   }

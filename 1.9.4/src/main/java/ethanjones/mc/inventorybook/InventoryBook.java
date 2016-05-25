@@ -32,6 +32,8 @@ import org.apache.logging.log4j.Logger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static ethanjones.mc.inventorybook.ConfigHandler.*;
+
 @Mod(modid = "inventorybook", version = "0.0.2")
 public class InventoryBook {
   public static final HashMap<UUID, ItemStack> books = new HashMap<UUID, ItemStack>();
@@ -65,7 +67,7 @@ public class InventoryBook {
 
   @SubscribeEvent
   public void rightClick(PlayerInteractEvent.RightClickItem event) {
-    if (!ConfigHandler.RIGHT_CLICK_PLAYER_INVENTORY) return;
+    if (!RIGHT_CLICK_PLAYER_INVENTORY) return;
     if (event.getItemStack() == null  || event.getItemStack().getItem() != Items.WRITABLE_BOOK || !event.getEntityPlayer().isSneaking()) return;
     if (event.isCanceled() || event.getEntityPlayer().worldObj.isRemote || event.getEntityPlayer() instanceof FakePlayer) return;
     ItemStack book = getBook(event.getEntityPlayer(), "Inventory");
@@ -76,7 +78,7 @@ public class InventoryBook {
 
   @SubscribeEvent
   public void rightClick(PlayerInteractEvent.RightClickBlock event) {
-    if (!ConfigHandler.RIGHT_CLICK_BLOCK_INVENTORY) return;
+    if (!RIGHT_CLICK_BLOCK_INVENTORY) return;
     if (event.getItemStack() == null  ||  event.getItemStack().getItem() != Items.WRITABLE_BOOK || !event.getEntityPlayer().isSneaking()) return;
     if (event.isCanceled() || event.getEntityPlayer().worldObj.isRemote || event.getEntityPlayer() instanceof FakePlayer) return;
     TileEntity tileEntity = event.getEntityPlayer().worldObj.getTileEntity(event.getPos());
@@ -93,9 +95,9 @@ public class InventoryBook {
     World world = entity.worldObj;
     if (event.isCanceled() || world.isRemote || !(entity instanceof EntityPlayer) || entity instanceof FakePlayer)
       return;
-    if (!ConfigHandler.DEATH_BOOK) return;
+    if (!DEATH_BOOK) return;
     EntityPlayer entityPlayer = ((EntityPlayer) entity);
-    if (ConfigHandler.DEATH_REQUIRE_BOOK_AND_QUILL && !decrementBook(entityPlayer)) return;
+    if (DEATH_REQUIRE_BOOK_AND_QUILL && !decrementBook(entityPlayer)) return;
     ItemStack book = getBook(entityPlayer, "Death");
     books.put(entityPlayer.getPersistentID(), book);
   }
