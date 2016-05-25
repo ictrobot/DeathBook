@@ -51,8 +51,8 @@ public abstract class PageHandler<T> {
 
       StringBuilder stringBuilder = new StringBuilder();
       if (lines != 0) stringBuilder.append("\n");
-      if (displaySlotNumber()) stringBuilder.append("[").append(convertItemStackIndex(i)).append("]");
-      if (displayStackSize() && itemStack.stackSize > 1) stringBuilder.append(itemStack.stackSize).append("x ");
+      if (displaySlotNumber()) stringBuilder.append("[").append(convertItemStackIndex(i)).append("] ");
+      if (displayStackSize() && itemStack.stackSize > 1) stringBuilder.append(itemStack.stackSize).append(" ");
       text.appendText(stringBuilder.toString());
       text.appendSibling(getItemStackComponent(itemStack, callback, false, true));
 
