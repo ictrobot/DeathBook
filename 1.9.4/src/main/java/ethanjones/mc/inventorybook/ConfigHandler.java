@@ -21,6 +21,7 @@ public class ConfigHandler {
   // OTHER
   public static boolean RIGHT_CLICK_PLAYER_INVENTORY;
   public static boolean RIGHT_CLICK_BLOCK_INVENTORY;
+  public static boolean ITEM_TOOLTIP;
 
   public static void init(File file) {
     Configuration config = new Configuration(file);
@@ -41,6 +42,7 @@ public class ConfigHandler {
 
     RIGHT_CLICK_PLAYER_INVENTORY = config.get("OTHER", "RIGHT_CLICK_PLAYER_INVENTORY", true, "Enable shift right clicking book and quill to receive inventory book").getBoolean();
     RIGHT_CLICK_BLOCK_INVENTORY = config.get("OTHER", "RIGHT_CLICK_BLOCK_INVENTORY", true, "Enable shift right clicking book and quill on a block to receive inventory book").getBoolean();
+    ITEM_TOOLTIP = config.get("OTHER", "ITEM_TOOLTIP", true).getBoolean();
 
     config.save();
   }

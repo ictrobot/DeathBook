@@ -18,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -62,6 +63,18 @@ public class InventoryBook {
     if (Loader.isModLoaded("bagginses")) {
       log.info("Activating Bagginses Integration");
       itemStackHandlers.add(new ModInventoryHandlers.BagginsesHandler());
+    }
+  }
+
+  @SubscribeEvent
+  public void itemTooltip(ItemTooltipEvent event) {
+    if (!ITEM_TOOLTIP) return;
+    ItemStack itemStack = event.getItemStack();
+    if (itemStack.getItem() == Items.written_book && itemStack.hasTagCompound() && itemStack.getTagCompound().hasKey("inventorybook", 8)) {
+      String tag = itemStack.getTagCompound().getString("inventorybook");
+      if (tag.isEmpty()) return;
+      String type = tag.substring(0, 1).toUpperCase() + tag.substring(1);
+      event.getToolTip().add(1, type + " InventoryBook");
     }
   }
 
