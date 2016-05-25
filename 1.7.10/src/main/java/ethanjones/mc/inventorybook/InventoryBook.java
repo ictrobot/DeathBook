@@ -155,7 +155,7 @@ public class InventoryBook {
       compound.setTag("pages", pages);
       compound.setString("author", player.getDisplayName()); // change
       compound.setString("title", title + " " + date);
-      compound.setBoolean("inventorybook", true);
+      compound.setString("inventorybook", title.toLowerCase());
 
       ItemStack itemStack = new ItemStack(Items.written_book, 1, 0);
       itemStack.setTagCompound(compound);
@@ -200,7 +200,7 @@ public class InventoryBook {
       compound.setTag("pages", pages);
       compound.setString("author", entityPlayer.getDisplayName()); // change
       compound.setString("title", title + " " + date);
-      compound.setBoolean("inventorybook", true);
+      compound.setString("inventorybook", title.toLowerCase());
 
       ItemStack itemStack = new ItemStack(Items.written_book, 1, 0);
       itemStack.setTagCompound(compound);
