@@ -4,6 +4,7 @@ import ethanjones.mc.inventorybook.ConfigHandler;
 import ethanjones.mc.inventorybook.InventoryBook;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -73,6 +74,13 @@ public abstract class PageHandler<T> {
   public static ITextComponent getItemStackComponent(ItemStack itemStack, ItemStackCallback callback, boolean isExtraPage, boolean createExtraPage) {
     TextComponentString x = new TextComponentString(itemStack.getDisplayName());
     if (itemStack.hasDisplayName()) x.getChatStyle().setItalic(Boolean.valueOf(true));
+
+    if (itemStack.getItem() == Items.written_book && itemStack.getTagCompound() != null && itemStack.getTagCompound().hasKey("inventorybook")) {
+      itemStack = ItemStack.copyItemStack(itemStack);
+      NBTTagList pages = new NBTTagList();
+      pages.appendTag(new NBTTagString(""));
+      itemStack.getTagCompound().setTag("pages", pages);
+    }
 
     if (itemStack.getItem() != null) {
       NBTTagCompound nbttagcompound = new NBTTagCompound();
