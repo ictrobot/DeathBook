@@ -115,7 +115,7 @@ public abstract class PageHandler<T> {
 //    return x;
 //  }
 
-  // convince methods to determine if itemstack[] is empty
+  // convenience methods to determine if itemstack[] is empty
   public static boolean empty(ItemStack[] itemStacks) {
     return empty(itemStacks, 0, itemStacks.length - 1);
   }
