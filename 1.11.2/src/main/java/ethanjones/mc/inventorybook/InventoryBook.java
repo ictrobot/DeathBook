@@ -34,7 +34,7 @@ import java.util.*;
 
 import static ethanjones.mc.inventorybook.ConfigHandler.*;
 
-@Mod(modid = "inventorybook", version = "0.0.4", serverSideOnly = true, acceptableRemoteVersions = "*")
+@Mod(modid = "inventorybook", version = "0.0.4", acceptableRemoteVersions = "*")
 public class InventoryBook {
   public static final HashMap<UUID, ItemStack> books = new HashMap<UUID, ItemStack>();
   public static final ArrayList<PageHandler<EntityPlayer>> handlers = new ArrayList<PageHandler<EntityPlayer>>() {{
