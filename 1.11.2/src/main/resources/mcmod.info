@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "inventorybook",
+    "name": "InventoryBook",
+    "description": "",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["ictrobot"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
