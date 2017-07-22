@@ -1,0 +1,64 @@
+buildscript {
+	repositories {
+		jcenter()
+		maven {
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
+	}
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+	}
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven-publish'
+apply from: file('../common.gradle')
+archivesBaseName = "inventorybook"
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+minecraft {
+    version = "1.12-14.21.1.2420"
+    runDir = "build/run"
+    mappings = "snapshot_20170624"
+    makeObfSourceJar = false
+}
+
+dependencies {
+   
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+	
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+publishing {
+    publications {
+        jar(MavenPublication) {
+            artifact file("/build/libs/inventorybook-${version}.jar")
+            groupId 'ethanjones.mc'
+            artifactId 'inventorybook'
+            version getMavenVersionString()
+        }
+    }
+    repositories {
+        maven {
+            url getMavenRepo()
+            credentials {
+                username localProperties.MAVEN_REPO_USERNAME
+                password localProperties.MAVEN_REPO_PASSWORD
+            }
+        }
+    }
+}
