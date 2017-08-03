@@ -1,3 +1,7 @@
+<a href="http://minecraft.curseforge.com/projects/inventorybook"><img src="http://cf.way2muchnoise.eu/full_245248_downloads.svg" alt="Downloads" align="right"></a>
+
+<a href="http://minecraft.curseforge.com/projects/inventorybook"><img src="http://cf.way2muchnoise.eu/versions/For%20MC_245248_all.svg" alt="MC Versions" align="right"></a>
+
 InventoryBook
 ============
 
